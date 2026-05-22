@@ -27,10 +27,10 @@ const userLogin = async (req: Request, res: Response) => {
   try {
     const result = await authService.userLogin(req.body);
 
-    console.log();
-    setAuthCookie(res, result);
+    // console.log();
+    // setAuthCookie(res, result);
     sendResponse(res, {
-      statusCode: 201,
+      statusCode: 200,
       success: true,
       message: "Login successfully",
       data: {
