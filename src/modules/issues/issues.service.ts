@@ -17,7 +17,17 @@ const issueCreate = async (payload: TIssue, id: string) => {
 
   return result;
 };
+const getAllIssuesFromDB = async () => {
+  const result = await pool.query(
+    `
+    SELECT * FROM issues 
+      
+      `,
+  );
+  return result;
+};
 
 export const issueService = {
   issueCreate,
+  getAllIssuesFromDB,
 };
