@@ -2,7 +2,8 @@ import bcrypt from "bcryptjs";
 import { pool } from "../../db";
 import jwt from "jsonwebtoken";
 import { config } from "../../config";
-const userSignup = async (payload: any) => {
+import type TUser from "./auth.interface";
+const userSignup = async (payload: TUser) => {
   const { name, email, password, role } = payload;
   const hashPassord = await bcrypt.hash(password, 10);
   const result = await pool.query(
@@ -41,11 +42,11 @@ const userLogin = async (payload: { email: string; password: string }) => {
   // const jwtpayload = {
   //   user,
   // };
-  const accessToken = jwt.sign(user, config.secret as string, {
+  const token = jwt.sign(user, config.secret as string, {
     expiresIn: "2d",
   });
   delete user.password;
-  return { accessToken, user };
+  return { token, user };
 };
 export const authService = {
   userSignup,

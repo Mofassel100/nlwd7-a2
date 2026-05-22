@@ -1,9 +1,10 @@
-import type { Request, Response } from "express";
-import { jwtDecode } from "jwt-decode";
+import type { NextFunction, Request, Response } from "express";
+
 import { authService } from "./auth.service";
 import sendResponse from "../../utility/sendResponse";
+import { setAuthCookie } from "../../utility/setCookie";
 
-const userSignup = async (req: Request, res: Response) => {
+const userSignup = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await authService.userSignup(req.body);
 
@@ -27,12 +28,13 @@ const userLogin = async (req: Request, res: Response) => {
     const result = await authService.userLogin(req.body);
 
     console.log();
+    setAuthCookie(res, result);
     sendResponse(res, {
       statusCode: 201,
       success: true,
       message: "Login successfully",
       data: {
-        token: result.accessToken,
+        token: result.token,
         user: result.user,
       },
     });

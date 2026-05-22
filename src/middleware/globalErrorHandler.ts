@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import type { NextFunction, Request, Response } from "express";
-import status from "http-status";
 
 export const globalErrorHandler = async (
   err: any,
