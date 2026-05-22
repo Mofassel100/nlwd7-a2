@@ -43,13 +43,6 @@ const IssuesUpdatedFromDB = async (
   user: TUser,
   payload: TIssue,
 ) => {
-  // console.log("IssueService:", issueId, user.role, payload);
-  // const isUserExist = await pool.query(
-  //   `
-  //   SELECT * FROM users WHERE id=$1
-  //     `,
-  //   [],
-  // );
   const isIssueExist = await pool.query(
     `
     SELECT * FROM issues WHERE id=$1
@@ -63,7 +56,6 @@ const IssuesUpdatedFromDB = async (
 
   const isMaintainer = user.role === "maintainer";
   const isContributorAllowed = user.role === "contributor";
-  console.log(isMaintainer, isContributorAllowed);
   if (!isMaintainer && !isContributorAllowed) {
     throw new Error("Unauthorized access");
   }
@@ -104,9 +96,36 @@ const IssuesUpdatedFromDB = async (
   // console.log("isIssueExist", isIssueExist.rows[0]);
 };
 
+const issueDeletedFromDB = async (id: string, user: TUser) => {
+  const isMaintainer = user.role === "maintainer";
+  console.log(isMaintainer, id);
+  if (!isMaintainer) {
+    throw new Error("Not authorized access");
+  }
+  const isExist = await pool.query(
+    `
+    SELECT * FROM issues WHERE id=$1
+      
+      `,
+    [id],
+  );
+  if (isExist.rows.length === 0) {
+    throw new Error("Issue Not found");
+  }
+  const result = await pool.query(
+    `
+    DELETE FROM issues WHERE id=$1
+      `,
+    [id],
+  );
+
+  return result;
+};
+
 export const issueService = {
   issueCreate,
   getAllIssuesFromDB,
   getSingleIssuesFromDB,
   IssuesUpdatedFromDB,
+  issueDeletedFromDB,
 };

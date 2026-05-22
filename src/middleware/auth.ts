@@ -8,24 +8,14 @@ import { config } from "../config";
 const auth = (...roles: ROLES[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // console.log("This is protected Route");
-      // console.log(req.headers.authorization);
-
-      // 1. Check if the token exists
-      // 2. Verify the token
-      // 3. Find the user into database
-      // 4. If the user active or not?
-
       const token = req.headers.authorization;
 
-      // console.log(token);
       if (!token) {
         res.status(401).json({
           success: false,
           message: "Unauthorized access!!",
         });
       }
-
       const decoded = jwt.verify(
         token as string,
         config.secret as string,
@@ -50,23 +40,8 @@ const auth = (...roles: ROLES[]) => {
         });
       }
 
-      // if (!user?.is_active) {
-      //   res.status(403).json({
-      //     success: false,
-      //     message: "Forbidden!!",
-      //   });
-      // }
-
-      // console.log("Auth Role :", user.role);
-
-      // roles = ["admin","agent"]
-      // user.role = "admin" | "user" | "agent"
-
-      if (roles.length && !roles.includes(user.role)) {
-        res.status(403).json({
-          success: false,
-          message: "Forbidden!!,This role have no access!",
-        });
+      if (roles.length > 0 && !roles.includes(user.role as ROLES)) {
+        throw new Error("Forbidden!!,This role have no access!");
       }
 
       req.user = decoded; // req : { user : {} }

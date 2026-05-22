@@ -3,12 +3,11 @@ import sendResponse from "../../utility/sendResponse";
 import { issueService } from "./issues.service";
 import type { JwtPayload } from "jsonwebtoken";
 import type TUser from "../auth/auth.interface";
-
+// Issue Created successfully
 const issueCreate = async (req: Request, res: Response) => {
   try {
     const { id } = req.user as JwtPayload;
     const result = await issueService.issueCreate(req.body, id);
-
     sendResponse(res, {
       statusCode: 201,
       success: true,
@@ -43,6 +42,7 @@ const getAllIssuesFromDB = async (req: Request, res: Response) => {
     });
   }
 };
+// Issue single get successfully
 const getSingleIssuesFromDB = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -78,17 +78,34 @@ const IssuesUpdatedFromDB = async (req: Request, res: Response) => {
       user as TUser,
       data,
     );
-    // if (result.rows.length === 0) {
-    //   res.status(404).json({
-    //     success: false,
-    //     message: "User Not found!",
-    //     data: {},
-    //   });
-    // }
+
     res.status(200).json({
       success: true,
       message: "Issue updated successfully",
       data: result?.rows[0],
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+// Issue Deleted
+const IssueDeletedFromDB = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const user = req.user as JwtPayload;
+  try {
+    const result = await issueService.issueDeletedFromDB(
+      id as string,
+      user as TUser,
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Issue deleted successfully",
+      data: {},
     });
   } catch (error: any) {
     res.status(500).json({
@@ -104,4 +121,5 @@ export const issueController = {
   getAllIssuesFromDB,
   getSingleIssuesFromDB,
   IssuesUpdatedFromDB,
+  IssueDeletedFromDB,
 };
