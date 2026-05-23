@@ -9,9 +9,9 @@ const userSignup = async (payload: TUser) => {
   const hashPassord = await bcrypt.hash(password, 10);
   const result = await pool.query(
     `
-     INSERT INTO users(name, email,password,role) VALUES($1,$2,$3,$4) RETURNING * 
+     INSERT INTO users(name, email,password) VALUES($1,$2,$3) RETURNING * 
       `,
-    [name, email, hashPassord, role],
+    [name, email, hashPassord],
   );
   delete result.rows[0].password;
   return result;

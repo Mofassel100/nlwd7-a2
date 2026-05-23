@@ -39,9 +39,11 @@ const auth = (...roles: ROLES[]) => {
           message: "User not found!",
         });
       }
-
-      if (roles.length > 0 && !roles.includes(user.role as ROLES)) {
-        throw new Error("Forbidden!!,This role have no access!");
+      if (roles.length && !roles.includes(user.role)) {
+        res.status(403).json({
+          success: false,
+          message: "Forbidden!!,This role have no access!",
+        });
       }
 
       req.user = decoded; // req : { user : {} }
