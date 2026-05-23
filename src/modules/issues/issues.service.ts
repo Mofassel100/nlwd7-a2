@@ -59,8 +59,10 @@ const IssuesUpdatedFromDB = async (
   if (!isMaintainer && !isContributorAllowed) {
     throw new Error("Unauthorized access");
   }
+
+  let result;
   if (user.role === "maintainer") {
-    const result = await pool.query(
+    result = await pool.query(
       `
     UPDATE issues 
     SET 
@@ -74,12 +76,12 @@ const IssuesUpdatedFromDB = async (
       [description, title, type, status, issueId],
     );
 
-    return result;
+    return result.rows[0];
   }
   const issue_reporter_id = isIssueExist.rows[0].reporter_id === user.id;
   const issue_status = isIssueExist.rows[0].status === "open";
   if (isContributorAllowed && issue_reporter_id && issue_status) {
-    const result = await pool.query(
+    result = await pool.query(
       `
     UPDATE issues 
     SET 
@@ -93,7 +95,7 @@ const IssuesUpdatedFromDB = async (
     return result;
   }
 
-  // console.log("isIssueExist", isIssueExist.rows[0]);
+  return result; // console.log("isIssueExist", isIssueExist.rows[0]);
 };
 
 const issueDeletedFromDB = async (id: string, user: TUser) => {
